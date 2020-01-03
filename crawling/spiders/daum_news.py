@@ -12,8 +12,8 @@ class DaumNewsSpider(scrapy.Spider):
     }
     mongo_config = {
         'host': os.environ.get('MONGO_HOST', 'localhost:27017'),
-        'db': 'default',
-        'collection': 'iamhappy'
+        'db': 'crawling',
+        'collection': 'daum_news'
     }
 
     def start_requests(self):
@@ -57,7 +57,7 @@ class DaumNewsSpider(scrapy.Spider):
         } 
         result.update(self.parse_meta(article.meta_data))
         result['_id'] = result['url']
-        yield result
+        return result
 
     def parse_meta(self, meta):
         article = meta['article']

@@ -56,6 +56,9 @@ TELNETCONSOLE_ENABLED = False
 # DOWNLOADER_MIDDLEWARES = {
 #     'crawling.middlewares.MongodbMiddleware': 100
 # }
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy_selenium.SeleniumMiddleware': 100
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -90,4 +93,10 @@ TELNETCONSOLE_ENABLED = False
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'DEBUG'
+
+from shutil import which
+
+SELENIUM_DRIVER_NAME = 'firefox'
+SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
+SELENIUM_DRIVER_ARGUMENTS=['-headless']
