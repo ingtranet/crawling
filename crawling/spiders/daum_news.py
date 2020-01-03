@@ -1,3 +1,5 @@
+import os
+
 import scrapy
 from newspaper import Article
 
@@ -9,7 +11,7 @@ class DaumNewsSpider(scrapy.Spider):
         }
     }
     mongo_config = {
-        'host': 'localhost:27017',
+        'host': os.environ.get('MONGO_HOST', 'localhost:27017'),
         'db': 'default',
         'collection': 'iamhappy'
     }
