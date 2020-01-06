@@ -23,14 +23,14 @@ class NaverBlogSpider(scrapy.Spider):
     }
 
     def start_requests(self):
-        yield SeleniumRequest(url=self.generate_url(50),
+        yield SeleniumRequest(url=self.generate_url(1),
             wait_time=5,
             wait_until=EC.presence_of_element_located((By.CLASS_NAME, "info_post")),
             callback=self.parse_page, 
-            meta={'page': 50})
+            meta={'page': 1})
 
     def parse_page(self, response):
-        article_urls = response.css('a.item_inner::attr("ng-href")').extract()
+        article_urls = response.css('a.desc_inner::attr("href")').extract()
         page = response.meta['page']
 
         if len(article_urls) and page <= 100:
@@ -41,7 +41,6 @@ class NaverBlogSpider(scrapy.Spider):
                 meta={'page': page + 1})
                 
         for url in article_urls:
-            print(url)
             yield scrapy.Request(url=url, callback=self.parse_article)
 
     
