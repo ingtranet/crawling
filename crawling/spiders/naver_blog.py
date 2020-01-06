@@ -1,5 +1,6 @@
 import os
 import time
+from datetime import datetime
 from shutil import which
 from urllib.parse import urljoin, urlparse
 
@@ -7,7 +8,6 @@ import scrapy
 from scrapy_selenium import SeleniumRequest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-
 
 class NaverBlogSpider(scrapy.Spider):
     name = 'naver_blog'
@@ -46,16 +46,16 @@ class NaverBlogSpider(scrapy.Spider):
     
     def parse_article(self, response):
         if response.css('#mainFrame'):
-            path = response.css('#mainFrame::attr("src")').extract()[0]
-            url = urljoin(response.url, urlparse(response.url).path)
-            return scrapy.Request(url=urljoin('https://blog.naver.com', path), callback=self.parse_article, meta={'url': url})
+            path = response.css('#mainFrame::attr("src")').get()
+            return scrapy.Request(url=urljoin('https://blog.naver.com', path), callback=self.parse_article)
         
         result = {
-            '_id': response.meta['url'],
-            'url': response.url,
-            'body': response.body
+            '_id': response.css('meta[property="og:url"]::attr("content")').get(),
+            'crawled_at': datetime.utcnow(),
+            'title': response.css('meta[property="og:title"]::attr("content")').get(),
+            'content': response.css('div.se-main-container').get(),
+            'url': response.url
         }
-
         return result
 
     def generate_url(self, page):
