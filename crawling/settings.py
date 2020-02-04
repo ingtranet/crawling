@@ -100,3 +100,5 @@ from shutil import which
 SELENIUM_DRIVER_NAME = 'firefox'
 SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
 SELENIUM_DRIVER_ARGUMENTS=['-headless']
+
+COMMANDS_MODULE = 'crawling.commands'
