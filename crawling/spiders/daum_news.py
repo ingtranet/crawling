@@ -17,14 +17,9 @@ class DaumNewsSpider(scrapy.Spider):
     }
 
     def start_requests(self):
-        media_codes = ['11']
-        reg_date_list = [f'{self.month}{day}' for day in range(32)]
-
-        for code in media_codes:
-            for date in reg_date_list:
-                yield scrapy.Request(url=self.generate_url(code, 1, date),
-                    callback=self.parse_page, 
-                    meta={'code': code, 'page': 1, 'date': date})
+        yield scrapy.Request(url=self.generate_url(self.code, 1, self.date),
+            callback=self.parse_page, 
+            meta={'code': self.code, 'page': 1, 'date': self.date})
 
     def parse_page(self, response):
         self.logger.info('Parsing URL: {}'.format(response.url))
