@@ -6,6 +6,7 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 import pymongo
+from scrapy.exceptions import CloseSpider
 
 class MongodbPipeline(object):
     def open_spider(self, spider):
@@ -18,5 +19,9 @@ class MongodbPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.collection.replace_one({'_id': item['_id']}, item, upsert=True)
+        try:
+            self.collection.replace_one({'_id': item['_id']}, item, upsert=True)
+        except Exception as e:
+            spider.crawler.engine.close()
+            raise e
         return item
