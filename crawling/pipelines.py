@@ -22,6 +22,6 @@ class MongodbPipeline(object):
         try:
             self.collection.replace_one({'_id': item['_id']}, item, upsert=True)
         except Exception as e:
-            spider.crawler.engine.close()
+            spider.crawler.stop()
             raise e
         return item
