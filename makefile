@@ -1,4 +1,4 @@
-IMAGE=ingtranet/crawler
+IMAGE=ingtranet/crawling
 
 build:
 	docker build -t ${IMAGE} .

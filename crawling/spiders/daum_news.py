@@ -34,7 +34,9 @@ class DaumNewsSpider(scrapy.Spider):
                 meta={'code': code, 'page': page + 1, 'date': date})
                 
         for url in article_urls:
-            yield scrapy.Request(url=url, callback=self.parse_article)
+            yield scrapy.Request(url=url,
+                callback=self.parse_article,
+                meta={'code': code, 'page': page + 1, 'date': date})
 
     
     def parse_article(self, response):
@@ -45,18 +47,21 @@ class DaumNewsSpider(scrapy.Spider):
         article.parse()
 
         result = {
+            'code': response.meta['code'],
+            'date': response.meta['date'],
             'title': article.title,
             'text': article.text,
             'publish_date': article.publish_date,
             'url': response.url
         } 
         result.update(self.parse_meta(article.meta_data))
-        result['_id'] = result['url']
+        result['_id'] = result['url'].split('/')[-1]
         return result
 
     def parse_meta(self, meta):
         article = meta['article']
         return {
+            'media_name': article['media_name'],
             'service_name': article['service_name']
         }
 
