@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 import scrapy
 from newspaper import Article
@@ -22,7 +23,6 @@ class DaumNewsSpider(scrapy.Spider):
             meta={'code': self.code, 'page': 1, 'date': self.date})
 
     def parse_page(self, response):
-        self.logger.info('Parsing URL: {}'.format(response.url))
         article_urls = response.css('.list_allnews .tit_thumb a.link_txt::attr("href")').extract()
         code = response.meta['code']
         page = response.meta['page']
@@ -40,30 +40,23 @@ class DaumNewsSpider(scrapy.Spider):
 
     
     def parse_article(self, response):
-        self.logger.debug('Parsing URL: {}'.format(response.url))
-        
         article = Article(response.url, language='ko')
         article.download(input_html=response.text)
         article.parse()
 
         result = {
+            '_id': response.css('[property="dg:uoc:uid"]::attr(content)').get(),
             'code': response.meta['code'],
             'date': response.meta['date'],
             'title': article.title,
             'text': article.text,
-            'publish_date': article.publish_date,
-            'url': response.url
+            'publish_date': article.publish_date - timedelta(hours=9),
+            'url': response.url,
+            'media_name': article.meta_data['article']['media_name'],
+            'service_name': article.meta_data['article']['service_name'],
         } 
-        result.update(self.parse_meta(article.meta_data))
-        result['_id'] = result['url'].split('/')[-1]
         return result
 
-    def parse_meta(self, meta):
-        article = meta['article']
-        return {
-            'media_name': article['media_name'],
-            'service_name': article['service_name']
-        }
 
     def generate_url(self, media_code, page, reg_date):
         BASE_URL = 'https://media.daum.net/cp/{media_code}?page={page}&regDate={reg_date}'
