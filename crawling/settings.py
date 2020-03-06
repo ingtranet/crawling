@@ -56,9 +56,6 @@ TELNETCONSOLE_ENABLED = False
 # DOWNLOADER_MIDDLEWARES = {
 #     'crawling.middlewares.MongodbMiddleware': 100
 # }
-DOWNLOADER_MIDDLEWARES = {
-    'scrapy_selenium.SeleniumMiddleware': 100
-}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html

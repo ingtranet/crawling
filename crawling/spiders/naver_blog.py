@@ -14,6 +14,9 @@ class NaverBlogSpider(scrapy.Spider):
     custom_settings = {
         'ITEM_PIPELINES': {
             'crawling.pipelines.MongodbPipeline': 100
+        },
+        'DOWNLOADER_MIDDLEWARES': {
+            'scrapy_selenium.SeleniumMiddleware': 100
         }
     }
     mongo_config = {
