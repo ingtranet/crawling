@@ -29,7 +29,7 @@ class UpbitCandleSpider(scrapy.Spider):
         client = pymongo.MongoClient(self.mongo_config['host'])
         db = client[self.mongo_config['db']]
         collection = db[self.mongo_config['collection']]
-        self.latest = collection.find_one(sort=[('candle_date_time_utc', pymongo.DESCENDING)])
+        self.latest = collection.find_one({'market': self.market}, sort=[('candle_date_time_utc', pymongo.DESCENDING)])
         if not self.latest:
             self.latest = {'candle_date_time_utc': '1970-01-01T00:00:00'}
     
