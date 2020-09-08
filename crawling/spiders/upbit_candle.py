@@ -41,6 +41,7 @@ class UpbitCandleSpider(scrapy.Spider):
         response = json.loads(response.text)
         for item in response:
             item['_id'] = f"{item['market']}_{item['candle_date_time_utc']}"
+            item['timestamp'] = datetime.strptime(item['candle_date_time_utc'], '%Y-%m-%dT%H:%M:%S')
             yield item
 
         if len(response) != 0:
