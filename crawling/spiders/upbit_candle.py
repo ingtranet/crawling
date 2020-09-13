@@ -26,16 +26,21 @@ class UpbitCandleSpider(scrapy.Spider):
     }
 
     def start_requests(self):
-        client = pymongo.MongoClient(self.mongo_config['host'])
-        db = client[self.mongo_config['db']]
-        collection = db[self.mongo_config['collection']]
-        self.latest = collection.find_one({'market': self.market}, sort=[('candle_date_time_utc', pymongo.DESCENDING)])
-        if not self.latest:
-            self.latest = {'candle_date_time_utc': '1970-01-01T00:00:00'}
-    
-        yield scrapy.Request(
-            url=self.generate_url(self.market, ''),
-            callback=self.parse_result)
+        if hasattr(self, 'datetime'):
+            yield scrapy.Request(
+                url=self.generate_url(self.market, self.datetime.split('+')[0].replace('T', ' ')),
+                callback=self.parse_result)
+        else:
+            client = pymongo.MongoClient(self.mongo_config['host'])
+            db = client[self.mongo_config['db']]
+            collection = db[self.mongo_config['collection']]
+            self.latest = collection.find_one({'market': self.market}, sort=[('candle_date_time_utc', pymongo.DESCENDING)])
+            if not self.latest:
+                self.latest = {'candle_date_time_utc': '1970-01-01T00:00:00'}
+        
+            yield scrapy.Request(
+                url=self.generate_url(self.market, ''),
+                callback=self.parse_result)
 
     def parse_result(self, response):
         response = json.loads(response.text)
@@ -44,12 +49,13 @@ class UpbitCandleSpider(scrapy.Spider):
             item['candle_date_time'] = datetime.strptime(item['candle_date_time_utc'], '%Y-%m-%dT%H:%M:%S')
             yield item
 
-        if len(response) != 0:
-            smallest_dt = min([item['candle_date_time_utc'] for item in response])
-            if smallest_dt > self.latest['candle_date_time_utc']:
-                yield scrapy.Request(
-                    url=self.generate_url(self.market, smallest_dt.replace('T', ' ')),
-                    callback=self.parse_result)
+        if not hasattr(self, 'datetime'):
+            if len(response) != 0:
+                smallest_dt = min([item['candle_date_time_utc'] for item in response])
+                if smallest_dt > self.latest['candle_date_time_utc']:
+                    yield scrapy.Request(
+                        url=self.generate_url(self.market, smallest_dt.replace('T', ' ')),
+                        callback=self.parse_result)
 
     def generate_url(self, market, to):
         BASE_URL = 'https://api.upbit.com/v1/candles/minutes/1?count=200&market={market}&to={to}'
