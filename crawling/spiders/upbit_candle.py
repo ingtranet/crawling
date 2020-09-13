@@ -1,7 +1,7 @@
 import os
 import time
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from shutil import which
 from urllib.parse import urljoin, urlparse
 
@@ -27,8 +27,10 @@ class UpbitCandleSpider(scrapy.Spider):
 
     def start_requests(self):
         if hasattr(self, 'datetime'):
+            dt = datetime.fromisoformat(self.datetime).astimezone(timezone.utc)
+            
             yield scrapy.Request(
-                url=self.generate_url(self.market, self.datetime.split('+')[0].replace('T', ' ')),
+                url=self.generate_url(self.market, dt.isoformat(' ').split('+')[0]),
                 callback=self.parse_result)
         else:
             client = pymongo.MongoClient(self.mongo_config['host'])
