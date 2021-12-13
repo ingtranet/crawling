@@ -13,7 +13,7 @@ hyperlink==19.0.0
 idna==2.8
 incremental==17.5.0
 jieba3k==0.35.1
-lxml==4.4.2
+lxml==4.6.5
 newspaper3k==0.2.8
 nltk==3.4.5
 parsel==1.5.2
