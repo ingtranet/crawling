@@ -1,4 +1,4 @@
-FROM python:3.7.7
+FROM harbor.ingtra.net/dockerhub/library/python:3.7.7
 
 WORKDIR /tmp
 RUN apt-get update -y && apt-get install -y --no-install-recommends firefox-esr
